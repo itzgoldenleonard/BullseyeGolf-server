@@ -1,6 +1,6 @@
 # GolfPin (backend)
 
-GolfPin is a digital scoreboard for the golf contest/minigame called "Nærmest hullet". This is the repo for the backend server handling the API, built with python flask. Currently the project is in early alpha.
+GolfPin is a digital scoreboard for the golf contest/minigame called "nærmest hullet"/"nearest pin". This is the repo for the backend server handling the API, built with python flask. Currently the project is in early alpha.
 
 
 ## Features
@@ -16,8 +16,8 @@ See the [installation guide](not-yet-made) in the docs
 
 ## Contribute
 
-- Report bugs and suggest new features at: github.com/itzgoldenleonard/GolfPin-server/issues
-- Source Code: github.com/itzgoldenleonard/GolfPin-server
+- Report bugs and suggest new features at: [https://github.com/itzgoldenleonard/GolfPin-server/issues]()
+- Source Code: [https://github.com/itzgoldenleonard/GolfPin-server]()
 
 ## Support
 
