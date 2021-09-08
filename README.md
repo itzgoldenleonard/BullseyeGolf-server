@@ -16,8 +16,8 @@ See the [installation guide](not-yet-made) in the docs
 
 ## Contribute
 
-- Report bugs and suggest new features at: [https://github.com/itzgoldenleonard/GolfPin-server/issues]()
-- Source Code: [https://github.com/itzgoldenleonard/GolfPin-server]()
+- [Report bugs and suggest new features](https://github.com/itzgoldenleonard/GolfPin-server/issues)
+- [Source Code](https://github.com/itzgoldenleonard/GolfPin-server)
 
 ## Support
 
