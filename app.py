@@ -16,4 +16,8 @@ def index(db_id):
         return database.serialize()
 
     elif request.method == 'POST':
-        return 'Youve used POST'
+        database = read(db_id)
+        if database.add_score(request.json['name'], request.json['score']) == -1:
+            return {"error": 'invalid name'}, 400
+        database.write()
+        return 'OK', 200
