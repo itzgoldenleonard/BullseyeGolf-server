@@ -47,6 +47,11 @@ class DB:
 
 def read(db_id: str) -> DB:
     """Return a DB object from a data file."""
-    with open('DB/' + db_id + '.json', 'r') as file:
+    if db_id[len(db_id) - 5:] == '.json':
+        file_name: str = 'DB/' + db_id
+    else:
+        file_name: str = 'DB/' + db_id + '.json'
+
+    with open(file_name, 'r') as file:
         return DB.from_dict(json.loads(file.read()))
 

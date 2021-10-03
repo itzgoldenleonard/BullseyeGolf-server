@@ -1,7 +1,8 @@
 """Just a test."""
-
-from flask import Flask, request
+import json
+from flask import Flask, request, Response
 from flask_cors import CORS
+import os
 from dataclass import DB, read
 
 app = Flask(__name__)
@@ -12,8 +13,19 @@ CORS(app)
 def index(db_id):
     """Test the connection."""
     if request.method == 'GET':
-        database = read(db_id)
-        return database.serialize()
+        if db_id == "ALL":
+            list_of_databases: str = "["
+            for i in os.listdir('DB'):
+                list_of_databases += (read(i).serialize()) + ', '
+
+            list_of_databases = list_of_databases[:len(list_of_databases) - 2]  # remove the last ', '
+            return Response(list_of_databases + ']', mimetype='text/json')
+            # I'm turning it into a string to avoid double serializing it
+            # REFACTOR: Manually JSON serializing is kinda janky, probably needs a refactoring
+
+        else:
+            database = read(db_id)
+            return database.serialize()
 
     elif request.method == 'POST':
         database = read(db_id)
