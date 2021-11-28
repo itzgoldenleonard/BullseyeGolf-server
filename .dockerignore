@@ -1,0 +1,5 @@
+tests/
+venv/
+README.md
+.git/
+.idea/
