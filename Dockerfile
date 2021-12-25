@@ -8,7 +8,7 @@ RUN pip install build
 
 RUN python -m build
 
-RUN pip install dist/gpserver-*.whl
+RUN pip install --force-reinstall dist/gpserver-*.whl
 
 RUN pip install gunicorn
 

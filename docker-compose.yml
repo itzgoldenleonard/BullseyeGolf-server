@@ -4,11 +4,22 @@ services:
     build: .
     ports:
       - "8000:8000"
+    networks:
+      my-network:
+        aliases:
+            - flask-app
+
   proxy:
     image: nginx
     ports:
       - 80:80
       - 443:443
     volumes:
-      - ./nginx/config:/etc/nginx/conf.d
+      - ./nginx/config:/etc/nginx
       - ./nginx/certs:/etc/ssl/private
+    networks:
+      - my-network
+
+
+networks:
+    my-network:
