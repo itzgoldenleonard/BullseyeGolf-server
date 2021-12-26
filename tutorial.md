@@ -14,9 +14,13 @@ openssl req -new -x509 -key privkey.pem > fullchain.pem
 
 
 Build pyproject and docker containers
-`docker-compose build`
+```bash
+docker-compose build
+```
 
 
 
 Start up the whole thing
-`docker-compose up`
+```bash
+docker-compose up
+```
