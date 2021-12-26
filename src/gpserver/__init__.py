@@ -3,12 +3,13 @@
 import json
 import os
 from flask import Flask, request, Response
-#from flask_cors import CORS
+from flask_cors import CORS
 from .dataclass import DB, read
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 def create_app(test_config=None):  # Create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
     @app.route('/user/<string:db_id>', methods=['GET', 'POST'])
@@ -17,7 +18,7 @@ def create_app(test_config=None):  # Create and configure the app
         if request.method == 'GET':
             if db_id == "ALL":
                 list_of_databases: str = "["
-                for i in os.listdir('DB'):
+                for i in os.listdir('/golfpin/DB'):
                     list_of_databases += (read(i).serialize()) + ', '
 
                 list_of_databases = list_of_databases[:len(list_of_databases) - 2]  # remove the last ', '
