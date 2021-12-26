@@ -8,6 +8,8 @@ services:
       my-network:
         aliases:
             - flask-app
+    volumes:
+      - ~/.local/share/golfpin:/golfpin
 
   proxy:
     image: nginx

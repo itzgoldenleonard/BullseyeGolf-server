@@ -19,7 +19,7 @@ class DB:
 
     def write(self):
         """Write the database object to file."""
-        with open('/home/ava/.local/share/golfpin/DB/' + self.db_id + '.json', 'w') as file:
+        with open('/golfpin/DB/' + self.db_id + '.json', 'w') as file:
             json.dump(self.to_dict(), file)
 
     def serialize(self):
@@ -48,9 +48,9 @@ class DB:
 def read(db_id: str) -> DB:
     """Return a DB object from a data file."""
     if db_id[len(db_id) - 5:] == '.json':
-        file_name: str = '/home/ava/.local/share/golfpin/DB/' + db_id
+        file_name: str = '/golfpin/DB/' + db_id
     else:
-        file_name: str = '/home/ava/.local/share/golfpin/DB/' + db_id + '.json'
+        file_name: str = '/golfpin/DB/' + db_id + '.json'
 
     with open(file_name, 'r') as file:
         return DB.from_dict(json.loads(file.read()))
