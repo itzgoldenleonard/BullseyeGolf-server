@@ -1,4 +1,3 @@
-DB/*
 venv/
 
 *.pyc
@@ -13,3 +12,5 @@ htmlcov/
 dist/
 build/
 *.egg-info
+
+nginx/certs/*
