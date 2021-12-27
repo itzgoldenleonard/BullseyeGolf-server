@@ -37,8 +37,46 @@ class Hole:
         return json.dumps(self.to_dict())
 
     def deserialize(string: str):
-        """Construct a Score object from a json string"""
+        """Construct a Hole object from a json string"""
         return Hole.from_dict(json.loads(string))
+
+@dataclass_json()
+@dataclass(frozen=True)
+class Tournament:
+    """Class for storing individual tournaments"""
+    
+    tournament_name: str = "",
+    t_start: int = 1,
+    t_end: int = 2,
+    tournament_image: str = "",
+    tournament_sponsor: str = "",
+    holes: list[Hole] = field(default_factory=list)
+
+    def serialize(self) -> str:
+        """Return a json serialized version of the object"""
+        return json.dumps(self.to_dict())
+
+    def deserialize(string: str):
+        """Construct a Tournament object from a json string"""
+        return Tournament.from_dict(json.loads(string))
+
+
+@dataclass_json()
+@dataclass(frozen=True)
+class ShortTournament:
+    """Class for the list of all tournaments"""
+
+    db_id: str = ""
+    tournament_name: str = ""
+    active: bool = False
+
+    def serialize(self) -> str:
+        """Return a json serialized version of the object"""
+        return json.dumps(self.to_dict())
+
+    def deserialize(string: str):
+        """Construct a Hole object from a json string"""
+        return ShortTournament.from_dict(json.loads(string))
 
 
 
@@ -52,22 +90,3 @@ def read(filename: str) -> str:
     with open(filename, 'r') as file:
         return file.read()
 
-
-"""
-# hole = Hole(3, "", "", "sponsor", "", [Score("Jens", 1.15), Score("Peter", 0.36)])
-# write(hole.serialize(), "test.json")
-hole = Hole(3, "texter", "", "sponsorino", "https://", [Score("Jens", 1.15)])
-write(hole.serialize(), "hole.json")
-print(f"Original hole object: \n{hole}\n")
-
-file_contents = read("hole.json")
-deserialized_hole = Hole.deserialize(file_contents)
-print(f"Imposter hole object: \n{deserialized_hole}\n")
-
-print("Tests:")
-print(hole.hole_text)
-print(deserialized_hole.hole_text)
-print("\n")
-print(hole.scores[0].player_name)
-print(deserialized_hole.scores[0].player_name)
-"""
