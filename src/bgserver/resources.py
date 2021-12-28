@@ -1,6 +1,6 @@
 from flask import Response, request
 from flask_restful import Resource
-from .dataclass import write, Tournament
+from .dataclass import read, write, Tournament
 
 
 class OnlineTest(Resource):
@@ -14,3 +14,6 @@ class Admin(Resource):
         write(tournament.serialize(), f'/bullseyegolf/DB/{db_id}.json')
         return Response("OK", status=200)
 
+class UserTournament(Resource):
+    def get(self, db_id):
+        return Response(read(f'/bullseyegolf/DB/{db_id}.json'), mimetype="application/json", status=200)
