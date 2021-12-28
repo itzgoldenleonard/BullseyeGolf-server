@@ -40,6 +40,10 @@ class Hole:
         """Construct a Hole object from a json string"""
         return Hole.from_dict(json.loads(string))
 
+    def __eq__(self, other):
+        return self.hole_number == other
+
+
 @dataclass_json()
 @dataclass(frozen=True)
 class Tournament:
