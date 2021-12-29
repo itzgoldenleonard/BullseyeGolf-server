@@ -11,6 +11,10 @@ class Admin(Resource):
         write(tournament.serialize(), f'/bullseyegolf/DB/{db_id}.json')
         return Response("OK", status=200)
 
+    def delete(self, db_id: str):
+        os.remove(f'/bullseyegolf/DB/{db_id}.json')
+        return Response("OK", status=200)
+
 
 class UserTournament(Resource):
     def get(self, db_id: str):
