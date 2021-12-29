@@ -2,6 +2,7 @@
 import json
 from dataclasses_json import dataclass_json
 from dataclasses import dataclass, field
+import time
 
 @dataclass_json()
 @dataclass(frozen=True)
@@ -79,8 +80,16 @@ class ShortTournament:
         return json.dumps(self.to_dict())
 
     def deserialize(string: str):
-        """Construct a Hole object from a json string"""
+        """Construct a ShortTournament object from a json string"""
         return ShortTournament.from_dict(json.loads(string))
+
+    def generate(filename: str):
+        """Generate a ShortTournament object from a db file"""
+        db_id: str = filename[:len(filename) - 5]
+        tournament: Tournament = Tournament.deserialize(read(f'/bullseyegolf/DB/{filename}'))
+        tournament_name: str = tournament.tournament_name
+        active: bool = True if tournament.t_start < int(time.time()) < tournament.t_end else False
+        return ShortTournament(db_id, tournament_name, active)
 
 
 

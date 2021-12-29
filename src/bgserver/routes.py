@@ -7,3 +7,4 @@ def initialize_routes(api):
     api.add_resource(UserTournament, '/user/<db_id>')
     api.add_resource(Admin, f'/admin/{api_key}/<db_id>')
     api.add_resource(UserHole, '/user/<db_id>/<int:hole_number>')
+    api.add_resource(TournamentList, '/user/ALL')
