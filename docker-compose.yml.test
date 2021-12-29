@@ -9,7 +9,7 @@ services:
         aliases:
             - flask-app
     volumes:
-      - ~/.local/share/golfpin:/golfpin
+      - ~/.local/share/bullseyegolf:/bullseyegolf
       - ./src:/src
 
   proxy:
