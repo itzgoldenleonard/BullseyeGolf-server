@@ -20,6 +20,9 @@ class Score:
         """Construct a Score object from a json string"""
         return Score.from_dict(json.loads(string))
 
+    def __lt__(self, other):
+        return self.player_score < other.player_score
+
 
 @dataclass_json()
 @dataclass(frozen=True)

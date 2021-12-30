@@ -36,6 +36,7 @@ class UserHole(Resource):
         for element in tournament.holes:
             if element == hole_number:
                 element.scores.append(score)
+                element.scores.sort()
                 write(tournament.serialize(), f'/bullseyegolf/DB/{db_id}.json')
                 return Response("OK", status=200)
 
