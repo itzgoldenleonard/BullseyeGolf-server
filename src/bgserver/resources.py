@@ -3,6 +3,7 @@ import json
 from flask import Response, request
 from flask_restful import Resource
 from .dataclass import read, write, Tournament, Hole, Score, ShortTournament
+import random
 
 
 class Admin(Resource):
@@ -49,3 +50,26 @@ class TournamentList(Resource):
             tournament_list.append(ShortTournament.generate(i).to_dict())
 
         return Response(json.dumps(tournament_list), mimetype="application/json", status=200)
+
+
+class GetImage(Resource):
+    def get(self, image_name: str):
+        with open(f'/bullseyegolf/images/{image_name}', 'rb') as file:
+            return Response(file.read(), mimetype='image/*', status=200)
+
+
+
+class UploadImage(Resource):
+    def put(self):
+        image_name: str = hex(random.getrandbits(32))
+
+        if(request.content_length <= 2097152):
+            if(request.content_type == 'image/jpeg' or request.content_type == 'image/png' or request.content_type == 'image/webp'):
+                with open(f'/bullseyegolf/images/{image_name}', 'wb') as file:
+                    file.write(request.get_data())
+                    return Response(f'{image_name}', status=200)
+            else:
+                return Response(f'Unsupported image type {request.content_type}', status=400)
+        else:
+            return Response('File too large', status=413)
+
