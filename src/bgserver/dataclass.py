@@ -53,11 +53,11 @@ class Hole:
 class Tournament:
     """Class for storing individual tournaments"""
     
-    tournament_name: str = "",
-    t_start: int = 1,
-    t_end: int = 2,
-    tournament_image: str = "",
-    tournament_sponsor: str = "",
+    tournament_name: str = ""
+    t_start: int = 1
+    t_end: int = 2
+    tournament_image: str = ""
+    tournament_sponsor: str = ""
     holes: list[Hole] = field(default_factory=list)
 
     def serialize(self) -> str:
@@ -77,6 +77,8 @@ class ShortTournament:
     db_id: str = ""
     tournament_name: str = ""
     active: bool = False
+    t_start: int = 0
+    t_end: int = 0
 
     def serialize(self) -> str:
         """Return a json serialized version of the object"""
@@ -91,8 +93,10 @@ class ShortTournament:
         db_id: str = filename[:len(filename) - 5]
         tournament: Tournament = Tournament.deserialize(read(f'/bullseyegolf/DB/{filename}'))
         tournament_name: str = tournament.tournament_name
+        t_start: int = tournament.t_start
+        t_end: int = tournament.t_end
         active: bool = True if tournament.t_start < int(time.time()) < tournament.t_end else False
-        return ShortTournament(db_id, tournament_name, active)
+        return ShortTournament(db_id, tournament_name, active, t_start, t_end)
 
 
 
