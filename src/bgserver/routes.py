@@ -1,8 +1,14 @@
 from .resources import *
 from .dataclass import read
+from .generate_key import generate_key
 
 def initialize_routes(api):
-    api_key = read('/bullseyegolf/credentials/admin_key')
+    try:
+        api_key = read('/bullseyegolf/credentials/admin_key')
+    except FileNotFoundError:
+        generate_key()
+        api_key = read('/bullseyegolf/credentials/admin_key')
+        print(f'No API key was found, a new one was generated:\n{api_key}')
 
     api.add_resource(UserTournament, '/user/<db_id>')
     api.add_resource(Admin, f'/admin/{api_key}/<db_id>')
