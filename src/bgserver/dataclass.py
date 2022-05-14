@@ -3,6 +3,7 @@ import json
 from dataclasses_json import dataclass_json
 from dataclasses import dataclass, field
 import time
+import os
 
 @dataclass_json()
 @dataclass(frozen=True)
@@ -102,6 +103,7 @@ class ShortTournament:
 
 def write(string: str, filename: str):
     """Write a string to a file"""
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as file:
         file.write(string)
 
