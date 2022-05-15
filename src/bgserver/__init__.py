@@ -13,7 +13,7 @@ def create_app(test_config=None):  # Create and configure the app
     api = Api(app)
     app.wsgi_app = ProxyFix(app.wsgi_app)
     app.config['MONGODB_SETTINGS'] = {
-        'host': 'mongodb://localhost/bullseyegolf'
+        'host': 'mongodb://MongoDB/bullseyegolf'
     }
 
     initialize_db(app)

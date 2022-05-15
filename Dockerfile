@@ -1,0 +1,13 @@
+# This is the test dockerfile, dont commit this as the regular dockerfile
+
+FROM python:latest
+
+WORKDIR ./
+
+COPY . .
+
+RUN pip install -e .
+
+ENV FLASK_APP bgserver
+
+CMD [ "flask", "run", "-p", "8000", "-h", "0.0.0.0"]
