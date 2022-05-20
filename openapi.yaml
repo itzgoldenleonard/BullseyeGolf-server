@@ -262,6 +262,9 @@ components:
     Tournament:
       type: object
       properties:
+        tournament_id:
+          type: string
+          format: uuid
         tournament_name:
           type: string
           example: Herredag uge 25

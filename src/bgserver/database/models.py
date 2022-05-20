@@ -25,4 +25,4 @@ class Tournament(db.Document):
     tournament_image = db.StringField(required=True)
     tournament_sponsor = db.StringField(required=True)
     holes = db.ListField(db.EmbeddedDocumentField(Hole))
-    # owner = db.ReferenceField(User) # Has to be stripped out before sending to client
+    owner = db.ReferenceField(User) # Has to be stripped out before sending to client
