@@ -41,7 +41,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ShortTournament'
-  /{username}/{id}:
+  /{username}/{tournament_id}:
     get:
       tags:
       - User
@@ -55,7 +55,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: id
+      - name: tournament_id
         in: path
         required: true
         style: simple
@@ -84,7 +84,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: id
+      - name: tournament_id
         in: path
         required: true
         style: simple
@@ -121,7 +121,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: id
+      - name: tournament_id
         in: path
         required: true
         style: simple
@@ -138,7 +138,7 @@ paths:
                 example: OK
       security:
       - ApiKey: []
-  /{username}/{id}/{hole_number}:
+  /{username}/{tournament_id}/{hole_number}:
     get:
       tags:
       - User
@@ -152,7 +152,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: id
+      - name: tournament_id
         in: path
         required: true
         style: simple
@@ -188,7 +188,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: id
+      - name: tournament_id
         in: path
         required: true
         style: simple
