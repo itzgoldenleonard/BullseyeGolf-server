@@ -16,7 +16,7 @@ class Hole(db.EmbeddedDocument):
     hole_image = db.StringField(required=True)
     hole_sponsor = db.StringField(required=True)
     game_mode = db.StringField()
-    scores = db.ListField(db.EmbeddedDocumentField(Score))
+    scores = db.EmbeddedDocumentListField(Score)
 
 class Tournament(db.Document):
     tournament_id = db.StringField(required=True, unique=True) # primary_key=True
@@ -25,7 +25,7 @@ class Tournament(db.Document):
     t_end = db.IntField(required=True)
     tournament_image = db.StringField(required=True)
     tournament_sponsor = db.StringField(required=True)
-    holes = db.ListField(db.EmbeddedDocumentField(Hole))
+    holes = db.EmbeddedDocumentListField(Hole)
     owner = db.ReferenceField(User) # Has to be stripped out before sending to client
 
 @dataclass(frozen=True)
