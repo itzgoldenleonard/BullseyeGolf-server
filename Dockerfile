@@ -1,15 +1,15 @@
-# This is the test dockerfile, dont commit this as the regular dockerfile
-
 FROM python:latest
 
 WORKDIR ./
 
 COPY . .
 
-RUN pip install -e .
+RUN pip install build
 
-ENV FLASK_APP bgserver
+RUN python -m build
 
-ENV FLASK_ENV development
+RUN pip install dist/bgserver-*.whl
 
-CMD [ "flask", "run", "-p", "8000", "-h", "0.0.0.0"]
+RUN pip install gunicorn
+
+CMD [ "gunicorn", "-b", "0.0.0.0:8000", "bgserver:create_app()" ]

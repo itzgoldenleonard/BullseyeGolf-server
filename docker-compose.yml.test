@@ -2,11 +2,17 @@ version: '3'
 services:
   api:
     build: .
+    volumes:
+      - ./src:/src
     networks:
       - my-network
+    ports:
+      - 8000:8000 # For testing purposes
 
   MongoDB:
     image: mongo:latest
+    ports:
+      - 27017:27017 # This is just for testing purposes
     volumes:
       - ./MongoDB/data:/data/db
     networks:
