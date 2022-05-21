@@ -3,9 +3,8 @@ from flask_restful import Resource
 import time
 from .database.models import Tournament, User, ShortTournament, Score
 from functools import wraps
-from mongoengine import DoesNotExist
 
-def key_required(func): # There is potentially a problem here if the login is correct but the user is not the owner of what they try to access 
+def key_required(func): # This function only checks the validity of the login, not if the user actually owns what they're trying to access
     @wraps(func)
     def decorated_func(*args, **kwargs):
         correct_key = User.objects(username=kwargs['username']).first().key
@@ -24,10 +23,14 @@ class TournamentResource(Resource):
     @key_required
     def delete(self, username: str, tournament_id: str):
         try:
-            tournament = Tournament.objects.get(tournament_id=tournament_id).delete()
-        except DoesNotExist:
+            tournament = Tournament.objects(tournament_id=tournament_id).only('owner').first()
+            if tournament.owner.username == username:
+                tournament.delete()
+                return Response("OK", status=200)
+            else:
+                abort(403)
+        except AttributeError:
             abort(404)
-        return Response("OK", status=200)
 
 
 class TournamentListResource(Resource):
@@ -40,9 +43,12 @@ class TournamentListResource(Resource):
     def post(self, username: str):
         data = request.get_json()
         try:
-            tournament = Tournament.objects.get(tournament_id=data['tournament_id'])
-            tournament.update(**data)
-        except DoesNotExist:
+            tournament = Tournament.objects(tournament_id=data['tournament_id']).only('owner').first()
+            if tournament.owner.username == username:
+                tournament.update(**data)
+            else:
+                abort(403)
+        except AttributeError:
             tournament = Tournament(**data)
             tournament.owner = User.objects(username=username).first()
             tournament.save()
