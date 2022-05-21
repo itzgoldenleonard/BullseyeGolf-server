@@ -41,6 +41,36 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ShortTournament'
+    post:
+      tags:
+      - Admin
+      summary: Update/create a tournament
+      description: Update the tournament with the entered id from the club with the entered username. Creates a new tournament if it doesnt exist.
+      parameters:
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Put the new Tournament object in the body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tournament'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+      security:
+      - ApiKey: []
   /{username}/{tournament_id}:
     get:
       tags:
@@ -71,43 +101,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Tournament'
-    post:
-      tags:
-      - Admin
-      summary: Update/create a tournament
-      description: Update the tournament with the entered id from the club with the entered username. Creates a new tournament if it doesnt exist.
-      parameters:
-      - name: username
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      - name: tournament_id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      requestBody:
-        description: Put the new Tournament object in the body
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Tournament'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: OK
-      security:
-      - ApiKey: []
     delete:
       tags:
       - Admin
@@ -257,6 +250,7 @@ components:
           example: Smeden
         scores:
           type: array
+          description: The scores need to be sorted by player_score in ascending order
           items:
             $ref: '#/components/schemas/Score'
     Tournament:
@@ -281,13 +275,15 @@ components:
           type: string
         holes:
           type: array
+          description: The holes need to be sorted by hole_number in ascending order
           items:
             $ref: '#/components/schemas/Hole'
     ShortTournament:
       type: object
       properties:
-        id:
+        tournament_id:
           type: string
+          format: uuid
         tournament_name:
           type: string
           example: Herredag uge 25

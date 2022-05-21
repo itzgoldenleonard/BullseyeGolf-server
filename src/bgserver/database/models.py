@@ -12,19 +12,19 @@ class Score(db.EmbeddedDocument):
 
 class Hole(db.EmbeddedDocument):
     hole_number = db.IntField(required=True)
-    hole_text = db.StringField(required=True)
-    hole_image = db.StringField(required=True)
-    hole_sponsor = db.StringField(required=True)
-    game_mode = db.StringField()
+    hole_text = db.StringField(required=True, default="")
+    hole_image = db.StringField(required=True, default="")
+    hole_sponsor = db.StringField(required=True, default="")
+    game_mode = db.StringField(default="")
     scores = db.EmbeddedDocumentListField(Score)
 
 class Tournament(db.Document):
     tournament_id = db.StringField(required=True, unique=True) # primary_key=True
     tournament_name = db.StringField(required=True)
-    t_start = db.IntField(required=True)
-    t_end = db.IntField(required=True)
-    tournament_image = db.StringField(required=True)
-    tournament_sponsor = db.StringField(required=True)
+    t_start = db.IntField(required=True, default=time.time())
+    t_end = db.IntField(required=True, default=time.time() + 86400)
+    tournament_image = db.StringField(required=True, default="")
+    tournament_sponsor = db.StringField(required=True, default="")
     holes = db.EmbeddedDocumentListField(Hole)
     owner = db.ReferenceField(User) # Has to be stripped out before sending to client
 
