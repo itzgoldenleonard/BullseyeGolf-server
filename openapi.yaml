@@ -1,0 +1,302 @@
+---
+openapi: 3.0.0
+info:
+  title: Bullseyegolf API
+  contact:
+    email: you@your-company.com
+  license:
+    name: AGPL-v3
+    url: https://www.gnu.org/licenses/agpl-3.0.en.html
+  version: "2.0"
+servers:
+- url: https://virtserver.swaggerhub.com/itzgoldenleonard/Bullseyegolf/2.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: Admin
+  description: For club administrators
+- name: User
+  description: For players
+paths:
+  /{username}:
+    get:
+      tags:
+      - User
+      summary: Get a list of all tournaments
+      description: Get a list of all tournaments from the club with the entered username
+      parameters:
+      - name: username
+        in: path
+        description: The username of the club
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: List of all tournaments from the club
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShortTournament'
+    post:
+      tags:
+      - Admin
+      summary: Update/create a tournament
+      description: Update the tournament with the entered id from the club with the entered username. Creates a new tournament if it doesnt exist.
+      parameters:
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Put the new Tournament object in the body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tournament'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+      security:
+      - ApiKey: []
+  /{username}/{tournament_id}:
+    get:
+      tags:
+      - User
+      summary: Get a tournament
+      description: Get the tournament with the entered id from the club with the entered username
+      parameters:
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: tournament_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: A Tournament object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tournament'
+    delete:
+      tags:
+      - Admin
+      summary: Delete a tournament
+      description: Delete the tournament with the entered id from the club with the entered username.
+      parameters:
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: tournament_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+      security:
+      - ApiKey: []
+  /{username}/{tournament_id}/{hole_number}:
+    get:
+      tags:
+      - User
+      summary: Get a hole
+      description: Get the hole with the entered number from the tournament with the entered id
+      parameters:
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: tournament_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: hole_number
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 18
+          minimum: 1
+          type: integer
+      responses:
+        "200":
+          description: A Tournament object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hole'
+    post:
+      tags:
+      - User
+      summary: Submit a score
+      description: Submit a score to the hole specified
+      parameters:
+      - name: username
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: tournament_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: hole_number
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maximum: 18
+          minimum: 1
+          type: integer
+      requestBody:
+        description: Score to be submitted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Score'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+components:
+  schemas:
+    Score:
+      type: object
+      properties:
+        player_name:
+          type: string
+          example: Peter
+        player_score:
+          minimum: 0.01
+          type: number
+          format: double
+          example: 1.03
+    Hole:
+      type: object
+      properties:
+        hole_number:
+          maximum: 18
+          minimum: 1
+          type: integer
+          example: 5
+        hole_text:
+          type: string
+          description: Text to be displayed when user sees the hole, if left empty the text will be 'Nærmest hullet'
+          example: ""
+        game_mode:
+          type: string
+          description: Unused
+          example: ""
+        hole_image:
+          type: string
+          format: uri
+          example: ""
+        hole_sponsor:
+          type: string
+          example: Smeden
+        scores:
+          type: array
+          description: The scores need to be sorted by player_score in ascending order
+          items:
+            $ref: '#/components/schemas/Score'
+    Tournament:
+      type: object
+      properties:
+        tournament_id:
+          type: string
+          format: uuid
+        tournament_name:
+          type: string
+          example: Herredag uge 25
+        t_start:
+          type: integer
+          format: unixtime
+        t_end:
+          type: integer
+          format: unixtime
+        tournament_image:
+          type: string
+          format: uri
+        tournament_sponsor:
+          type: string
+        holes:
+          type: array
+          description: The holes need to be sorted by hole_number in ascending order
+          items:
+            $ref: '#/components/schemas/Hole'
+    ShortTournament:
+      type: object
+      properties:
+        tournament_id:
+          type: string
+          format: uuid
+        tournament_name:
+          type: string
+          example: Herredag uge 25
+        active:
+          type: boolean
+        t_start:
+          type: integer
+          format: unixtime
+        t_end:
+          type: integer
+          format: unixtime
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      name: X-API-KEY
+      in: header

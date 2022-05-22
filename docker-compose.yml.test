@@ -2,27 +2,31 @@ version: '3'
 services:
   api:
     build: .
-    ports:
-      - "8000:8000"
-    networks:
-      my-network:
-        aliases:
-            - flask-app
     volumes:
-      - ~/.local/share/bullseyegolf:/bullseyegolf
       - ./src:/src
-
-  proxy:
-    image: nginx
+    networks:
+      - my-network
     ports:
-      - 80:80
-      - 443:443
+      - 8000:8000 # For testing purposes
+
+  MongoDB:
+    image: mongo:latest
+    ports:
+      - 27017:27017 # This is just for testing purposes
     volumes:
-      - ./nginx/config:/etc/nginx
-      - ./nginx/certs:/etc/ssl/private
+      - ./MongoDB/data:/data/db
     networks:
       - my-network
 
+  nginx:
+    build: ./nginx
+    volumes:
+      - ./nginx/certs:/etc/ssl/private
+    networks:
+      - my-network
+    ports:
+      - 80:80
+      - 443:443
 
 networks:
-    my-network:
+  my-network:

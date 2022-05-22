@@ -1,75 +1,74 @@
-import os
-import json
-from flask import Response, request
+from flask import Response, request, jsonify, abort
 from flask_restful import Resource
-from .dataclass import read, write, Tournament, Hole, Score, ShortTournament
-import random
+import time
+from .database.models import Tournament, User, ShortTournament, Score
+from functools import wraps
 
-
-class Admin(Resource):
-    def post(self, db_id: str):
-        tournament: str = Tournament.deserialize(request.get_data(as_text=True))
-        write(tournament.serialize(), f'/bullseyegolf/DB/{db_id}.json')
-        return Response("OK", status=200)
-
-    def delete(self, db_id: str):
-        os.remove(f'/bullseyegolf/DB/{db_id}.json')
-        return Response("OK", status=200)
-
-
-class UserTournament(Resource):
-    def get(self, db_id: str):
-        return Response(read(f'/bullseyegolf/DB/{db_id}.json'), mimetype="application/json", status=200)
-
-
-class UserHole(Resource):
-    def get(self, db_id: str, hole_number: int):
-        tournament = Tournament.deserialize(read(f'/bullseyegolf/DB/{db_id}.json'))
-        for element in tournament.holes:
-            if element == hole_number:
-                return Response(element.serialize(), mimetype="application/json", status=200)
-
-        return Response("Hole not found", status=404)
-
-    def post(self, db_id: str, hole_number: int):
-        score = Score.deserialize(request.get_data(as_text=True))
-        tournament = Tournament.deserialize(read(f'/bullseyegolf/DB/{db_id}.json'))
-        for element in tournament.holes:
-            if element == hole_number:
-                element.scores.append(score)
-                element.scores.sort()
-                write(tournament.serialize(), f'/bullseyegolf/DB/{db_id}.json')
-                return Response("OK", status=200)
-
-        return Response("Holey not found", status=404)
-
-class TournamentList(Resource):
-    def get(self):
-        tournament_list: list = []
-        for i in os.listdir('/bullseyegolf/DB'):
-            tournament_list.append(ShortTournament.generate(i).to_dict())
-
-        return Response(json.dumps(tournament_list), mimetype="application/json", status=200)
-
-
-class GetImage(Resource):
-    def get(self, image_name: str):
-        with open(f'/bullseyegolf/images/{image_name}', 'rb') as file:
-            return Response(file.read(), mimetype='image/*', status=200)
-
-
-
-class UploadImage(Resource):
-    def put(self):
-        image_name: str = hex(random.getrandbits(32))
-
-        if(request.content_length <= 2097152):
-            if(request.content_type == 'image/jpeg' or request.content_type == 'image/png' or request.content_type == 'image/webp'):
-                with open(f'/bullseyegolf/images/{image_name}', 'wb') as file:
-                    file.write(request.get_data())
-                    return Response(f'{image_name}', status=200)
-            else:
-                return Response(f'Unsupported image type {request.content_type}', status=400)
+def key_required(func): # This function only checks the validity of the login, not if the user actually owns what they're trying to access
+    @wraps(func)
+    def decorated_func(*args, **kwargs):
+        correct_key = User.objects(username=kwargs['username']).first().key
+        if correct_key == request.headers['X-API-KEY']:
+            return func(*args, **kwargs)
         else:
-            return Response('File too large', status=413)
+            abort(401)
+    return decorated_func
+
+
+class TournamentResource(Resource):
+    def get(self, username: str, tournament_id: str):
+        tournament = Tournament.objects(tournament_id=tournament_id).exclude('owner', 'id').first().to_json()
+        return Response(tournament, mimetype="application/json", status=200)
+
+    @key_required
+    def delete(self, username: str, tournament_id: str):
+        try:
+            tournament = Tournament.objects(tournament_id=tournament_id).only('owner').first()
+            if tournament.owner.username == username:
+                tournament.delete()
+                return Response("OK", status=200)
+            else:
+                abort(403)
+        except AttributeError:
+            abort(404)
+
+
+class TournamentListResource(Resource):
+    def get(self, username: str):
+        tournaments = Tournament.objects(owner=User.objects(username=username).first()).only('tournament_id', 'tournament_name', 't_start', 't_end')
+        short_tournaments = [ShortTournament.from_tournament(e) for e in tournaments]
+        return jsonify(short_tournaments)
+
+    @key_required
+    def post(self, username: str):
+        data = request.get_json()
+        try:
+            tournament = Tournament.objects(tournament_id=data['tournament_id']).only('owner').first()
+            if tournament.owner.username == username:
+                tournament.update(**data)
+            else:
+                abort(403)
+        except AttributeError:
+            tournament = Tournament(**data)
+            tournament.owner = User.objects(username=username).first()
+            tournament.save()
+        return Response("OK", status=200)
+
+
+class HoleResource(Resource):
+    def get(self, username: str, tournament_id: str, hole_number: int):
+        tournament = Tournament.objects(tournament_id=tournament_id).only('holes').first()
+        for hole in tournament.holes:
+            if hole.hole_number == hole_number:
+                return Response(hole.to_json(), mimetype="application/json", status=200)
+        abort(404)
+
+    def post(self, username: str, tournament_id: str, hole_number: int):
+        data = request.get_json()
+        tournament = Tournament.objects(tournament_id=tournament_id, holes__hole_number=hole_number).only('holes', 't_start', 't_end')
+        if not (tournament[0].t_start < int(time.time()) < tournament[0].t_end):
+            abort(403)
+        tournament.update(add_to_set__holes__S__scores=Score(**data))
+        return Response("OK", mimetype="text/plain", status=200)
+
 
