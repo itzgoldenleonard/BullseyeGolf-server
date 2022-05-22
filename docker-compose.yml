@@ -19,7 +19,7 @@ services:
     networks:
       - my-network
     ports:
-      - 80:80 # Might not be neccecary
+      - 80:80
       - 443:443
 
 networks:

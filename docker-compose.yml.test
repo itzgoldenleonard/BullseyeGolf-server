@@ -18,5 +18,15 @@ services:
     networks:
       - my-network
 
+  nginx:
+    build: ./nginx
+    volumes:
+      - ./nginx/certs:/etc/ssl/private
+    networks:
+      - my-network
+    ports:
+      - 80:80
+      - 443:443
+
 networks:
   my-network:
