@@ -65,7 +65,9 @@ class HoleResource(Resource):
 
     def post(self, username: str, tournament_id: str, hole_number: int):
         data = request.get_json()
-        tournament = Tournament.objects(tournament_id=tournament_id, holes__hole_number=hole_number).only('holes')
+        tournament = Tournament.objects(tournament_id=tournament_id, holes__hole_number=hole_number).only('holes', 't_start', 't_end')
+        if not (tournament[0].t_start < int(time.time()) < tournament[0].t_end):
+            abort(403)
         tournament.update(add_to_set__holes__S__scores=Score(**data))
         return Response("OK", mimetype="text/plain", status=200)
 

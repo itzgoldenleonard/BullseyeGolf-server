@@ -9,10 +9,10 @@ class User(db.Document):
 
 class Score(db.EmbeddedDocument):
     player_name = db.StringField(required=True)
-    player_score = db.FloatField(required=True)
+    player_score = db.FloatField(required=True, min_value=0.01)
 
 class Hole(db.EmbeddedDocument):
-    hole_number = db.IntField(required=True)
+    hole_number = db.IntField(required=True, min_value=1, max_value=18)
     hole_text = db.StringField(required=True, default="")
     hole_image = db.StringField(required=True, default="")
     hole_sponsor = db.StringField(required=True, default="")
@@ -26,8 +26,12 @@ class Tournament(db.Document):
     t_end = db.IntField(required=True, default=time.time() + 86400)
     tournament_image = db.StringField(required=True, default="")
     tournament_sponsor = db.StringField(required=True, default="")
-    holes = db.SortedListField(db.EmbeddedDocumentField(Hole), ordering="hole_number")
+    holes = db.SortedListField(db.EmbeddedDocumentField(Hole), ordering="hole_number", max_length=18)
     owner = db.ReferenceField(User, reverse_delete_rule=mongoengine.CASCADE) # Has to be stripped out before sending to client
+
+    def clean(self):
+        if self.t_end < self.t_start:
+            raise mongoengine.ValidationError("End time must be after start time")
 
 @dataclass(frozen=True)
 class ShortTournament():
