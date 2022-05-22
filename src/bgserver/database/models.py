@@ -1,5 +1,6 @@
 from .db import db
 from dataclasses import dataclass
+import mongoengine
 import time
 
 class User(db.Document):
@@ -16,7 +17,7 @@ class Hole(db.EmbeddedDocument):
     hole_image = db.StringField(required=True, default="")
     hole_sponsor = db.StringField(required=True, default="")
     game_mode = db.StringField(default="")
-    scores = db.EmbeddedDocumentListField(Score)
+    scores = db.SortedListField(db.EmbeddedDocumentField(Score), ordering="player_score")
 
 class Tournament(db.Document):
     tournament_id = db.StringField(required=True, unique=True) # primary_key=True
@@ -25,8 +26,8 @@ class Tournament(db.Document):
     t_end = db.IntField(required=True, default=time.time() + 86400)
     tournament_image = db.StringField(required=True, default="")
     tournament_sponsor = db.StringField(required=True, default="")
-    holes = db.EmbeddedDocumentListField(Hole)
-    owner = db.ReferenceField(User) # Has to be stripped out before sending to client
+    holes = db.SortedListField(db.EmbeddedDocumentField(Hole), ordering="hole_number")
+    owner = db.ReferenceField(User, reverse_delete_rule=mongoengine.CASCADE) # Has to be stripped out before sending to client
 
 @dataclass(frozen=True)
 class ShortTournament():

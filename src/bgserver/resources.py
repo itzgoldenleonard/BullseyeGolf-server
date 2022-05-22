@@ -58,15 +58,15 @@ class TournamentListResource(Resource):
 class HoleResource(Resource):
     def get(self, username: str, tournament_id: str, hole_number: int):
         tournament = Tournament.objects(tournament_id=tournament_id).only('holes').first()
-        hole = tournament.holes.get(hole_number=hole_number)
-        return Response(hole.to_json(), mimetype="application/json", status=200)
+        for hole in tournament.holes:
+            if hole.hole_number == hole_number:
+                return Response(hole.to_json(), mimetype="application/json", status=200)
+        abort(404)
 
     def post(self, username: str, tournament_id: str, hole_number: int):
         data = request.get_json()
-        tournament = Tournament.objects(tournament_id=tournament_id).only('holes').first()
-        hole = tournament.holes.get(hole_number=hole_number)
-        hole.scores.create(**data)
-        tournament.update(set__holes=tournament.holes)
+        tournament = Tournament.objects(tournament_id=tournament_id, holes__hole_number=hole_number).only('holes')
+        tournament.update(add_to_set__holes__S__scores=Score(**data))
         return Response("OK", mimetype="text/plain", status=200)
 
 
