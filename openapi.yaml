@@ -7,7 +7,7 @@ info:
   license:
     name: AGPL-v3
     url: https://www.gnu.org/licenses/agpl-3.0.en.html
-  version: "2.0"
+  version: "2.1"
 servers:
 - url: https://virtserver.swaggerhub.com/itzgoldenleonard/Bullseyegolf/2.0
   description: SwaggerHub API Auto Mocking
@@ -92,6 +92,15 @@ paths:
         explode: false
         schema:
           type: string
+      - name: No-Hole-Images
+        in: header
+        description: If set all hole_image fields are replaced with an empty string
+        required: false
+        style: simple
+        explode: false
+        schema:
+          type: boolean
+          default: false
       responses:
         "200":
           description: A Tournament object
@@ -215,9 +224,14 @@ paths:
 components:
   schemas:
     Score:
+      required:
+      - player_name
+      - player_score
       type: object
       properties:
         player_name:
+          maxLength: 40
+          minLength: 2
           type: string
           example: Peter
         player_score:
@@ -226,6 +240,8 @@ components:
           format: double
           example: 1.03
     Hole:
+      required:
+      - hole_number
       type: object
       properties:
         hole_number:
@@ -234,10 +250,12 @@ components:
           type: integer
           example: 5
         hole_text:
+          maxLength: 100
           type: string
           description: Text to be displayed when user sees the hole, if left empty the text will be 'Nærmest hullet'
           example: ""
         game_mode:
+          maxLength: 10
           type: string
           description: Unused
           example: ""
@@ -246,6 +264,7 @@ components:
           format: uri
           example: ""
         hole_sponsor:
+          maxLength: 40
           type: string
           example: Smeden
         scores:
@@ -254,12 +273,17 @@ components:
           items:
             $ref: '#/components/schemas/Score'
     Tournament:
+      required:
+      - tournament_id
+      - tournament_name
       type: object
       properties:
         tournament_id:
           type: string
           format: uuid
         tournament_name:
+          maxLength: 100
+          minLength: 1
           type: string
           example: Herredag uge 25
         t_start:
@@ -272,8 +296,10 @@ components:
           type: string
           format: uri
         tournament_sponsor:
+          maxLength: 40
           type: string
         holes:
+          maxItems: 18
           type: array
           description: The holes need to be sorted by hole_number in ascending order
           items:

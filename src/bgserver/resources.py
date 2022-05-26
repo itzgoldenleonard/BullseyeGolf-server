@@ -17,11 +17,23 @@ def key_required(func): # This function only checks the validity of the login, n
 
 class TournamentResource(Resource):
     def get(self, username: str, tournament_id: str):
+
+        try:
+            if request.headers['No-Hole-Images'] == 'true' or request.headers['No-Hole-Images'] == 'True':
+                try:
+                    tournament = Tournament.objects(tournament_id=tournament_id).exclude('owner', 'id', 'holes__hole_image').first().to_json()
+                except AttributeError:
+                    abort(404, "Tournament not found")
+                return Response(tournament, mimetype="application/json", status=200)
+        except KeyError:
+            pass
+
         try:
             tournament = Tournament.objects(tournament_id=tournament_id).exclude('owner', 'id').first().to_json()
         except AttributeError:
             abort(404, "Tournament not found")
         return Response(tournament, mimetype="application/json", status=200)
+
 
     @key_required
     def delete(self, username: str, tournament_id: str):
