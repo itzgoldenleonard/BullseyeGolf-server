@@ -17,7 +17,10 @@ def key_required(func): # This function only checks the validity of the login, n
 
 class TournamentResource(Resource):
     def get(self, username: str, tournament_id: str):
-        tournament = Tournament.objects(tournament_id=tournament_id).exclude('owner', 'id').first().to_json()
+        try:
+            tournament = Tournament.objects(tournament_id=tournament_id).exclude('owner', 'id').first().to_json()
+        except AttributeError:
+            abort(404, "Tournament not found")
         return Response(tournament, mimetype="application/json", status=200)
 
     @key_required
@@ -58,10 +61,13 @@ class TournamentListResource(Resource):
 class HoleResource(Resource):
     def get(self, username: str, tournament_id: str, hole_number: int):
         tournament = Tournament.objects(tournament_id=tournament_id).only('holes').first()
-        for hole in tournament.holes:
-            if hole.hole_number == hole_number:
-                return Response(hole.to_json(), mimetype="application/json", status=200)
-        abort(404)
+        try:
+            for hole in tournament.holes:
+                if hole.hole_number == hole_number:
+                    return Response(hole.to_json(), mimetype="application/json", status=200)
+        except AttributeError:
+            abort(404, "Tournament not found")
+        abort(404, "Hole not found")
 
     def post(self, username: str, tournament_id: str, hole_number: int):
         data = request.get_json()
