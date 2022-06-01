@@ -9,7 +9,7 @@ class User(db.Document):
 
 class Score(db.EmbeddedDocument):
     player_name = db.StringField(required=True, min_length=2, max_length=40)
-    player_score = db.DecimalField(required=True, min_value=0.01, precision=2)
+    player_score = db.DecimalField(required=True, min_value=0, precision=2)
 
 class Hole(db.EmbeddedDocument):
     hole_number = db.IntField(required=True, min_value=1, max_value=18)

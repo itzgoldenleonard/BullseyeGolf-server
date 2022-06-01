@@ -3,6 +3,7 @@ from flask_restful import Resource
 import time
 from .database.models import Tournament, User, ShortTournament, Score
 from functools import wraps
+from mongoengine import ValidationError
 
 def key_required(func): # This function only checks the validity of the login, not if the user actually owns what they're trying to access
     @wraps(func)
@@ -83,10 +84,15 @@ class HoleResource(Resource):
 
     def post(self, username: str, tournament_id: str, hole_number: int):
         data = request.get_json()
+        score = Score(**data)
+        try:
+            score.validate()
+        except ValidationError:
+            abort(400, "Invalid score")
         tournament = Tournament.objects(tournament_id=tournament_id, holes__hole_number=hole_number).only('holes', 't_start', 't_end')
         if not (tournament[0].t_start < int(time.time()) < tournament[0].t_end):
             abort(403)
-        tournament.update(add_to_set__holes__S__scores=Score(**data))
+        tournament.update(add_to_set__holes__S__scores=score)
         return Response("OK", mimetype="text/plain", status=200)
 
 
