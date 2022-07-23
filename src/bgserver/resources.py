@@ -84,7 +84,7 @@ class HoleResource(Resource):
 
     def post(self, username: str, tournament_id: str, hole_number: int):
         data = request.get_json()
-        score = Score(**data)
+        score = Score(player_name=data['player_name'], player_score=data['player_score'])
         try:
             score.validate()
         except ValidationError:
