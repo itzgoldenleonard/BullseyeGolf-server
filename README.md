@@ -6,22 +6,19 @@ BullseyeGolf is a digital scoreboard for the golf contest/minigame called "nærm
 ## Features
 
 - Modern, easy to use web interface
-- Customize each event with a different photo [WIP]
+- Customize each event with a different photo
 - Set up as many events as you want
-- CSV export for long term storage [NYI]
+- Printing scores
 
 ## Installation
 
-See the [installation guide](not-yet-made) in the docs
+See the [Setting up a production server](https://github.com/itzgoldenleonard/BullseyeGolf-server/wiki/Setting-up-a-production-server) page in the wiki
 
 ## Contribute
 
 - [Report bugs and suggest new features](https://github.com/itzgoldenleonard/BullseyeGolf-server/issues)
 - [Source Code](https://github.com/itzgoldenleonard/BullseyeGolf-server)
 
-## Support
-
-Once the project enters public beta a support chatroom will be made on matrix
 
 ## License
 
